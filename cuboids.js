@@ -5,7 +5,7 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 // WebGL canvas context
-var gl = canvas.getContext('webgl');
+var gl = canvas.getContext('webgl', { preserveDrawingBuffer: true });
 
 var vshader = `
 attribute vec4 position;
@@ -110,7 +110,9 @@ var handAngle = deg2rad(45);
 drawArm = (gl, n, cameraMatrix) => {
 
   // Clear color and depth buffer
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  //gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  //gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.clear(gl.DEPTH_BUFFER_BIT);
 
   // Shoulder
   var modelMatrix = identity();
@@ -130,8 +132,10 @@ drawArm = (gl, n, cameraMatrix) => {
 }
 
 // Update the angles and redraw the arm at each frame
-setInterval(() => {
+function onFrame(time) {
     armAngle = (armAngle + ANGLE_STEP) % 360;
     handAngle = (handAngle + ANGLE_STEP) % 360;
     drawArm(gl, n, cameraMatrix);
-}, 33);
+    requestAnimationFrame(onFrame);
+}
+onFrame();
