@@ -88,7 +88,7 @@ gl.enable(gl.DEPTH_TEST);
 
 // Set the camera
 var cameraMatrix = perspective({fov: deg2rad(30), aspect: canvas.width / canvas.height, near: 1, far: 100});
-cameraMatrix = transform(cameraMatrix, {z: -15});
+//cameraMatrix = transform(cameraMatrix, {z: -15});
 
 // Set the point light color and position
 var lightColor = gl.getUniformLocation(program, 'lightColor');
@@ -101,41 +101,46 @@ gl.uniform3f(lightPosition, 2.5, 2.5, 2.5);
 var ambientLight = gl.getUniformLocation(program, 'ambientLight');
 gl.uniform3f(ambientLight, 0.4, 0.4, 0.4);
 
-// Click the buttons to update the arm/hand angles
-var ANGLE_STEP = deg2rad(3);
-var armAngle = deg2rad(180);
-var handAngle = deg2rad(45);
+var cuboids = [];
+var nCuboids = 42;
+while(nCuboids > 0) {
+    let cuboid = {
+        x: 24 - Math.random() * 48,
+        y: 24 - Math.random() * 48,
+        z: 24 - Math.random() * 48,
+        rx: Math.random() * Math.PI,
+        ry: Math.random() * Math.PI,
+        rz: Math.random() * Math.PI,
+        vrx: deg2rad(1.5 - Math.random() * 3),
+        vry: deg2rad(1.5 - Math.random() * 3),
+        vrz: deg2rad(1.5 - Math.random() * 3)
+    };
+    cuboids.push(cuboid);
+    nCuboids -= 1;
+}
 
 // Draw the complete arm
-drawArm = (gl, n, cameraMatrix) => {
+drawCuboids = (gl, n, cameraMatrix) => {
 
-  // Clear color and depth buffer
-  //gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  //gl.clear(gl.COLOR_BUFFER_BIT);
-  gl.clear(gl.DEPTH_BUFFER_BIT);
+    // Clear color and depth buffer
+    //gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    //gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.clear(gl.DEPTH_BUFFER_BIT);
 
-  // Shoulder
-  var modelMatrix = identity();
-  modelMatrix = transform(modelMatrix, {x: -3});
-  drawShape(gl, program, cameraMatrix, modelMatrix, n, 2, 1, 1);
-
-  // Arm
-  var modelMatrix = identity();
-  modelMatrix = transform(modelMatrix, {rx: armAngle}); // rotate
-  modelMatrix = transform(modelMatrix, {y: -2});        // translate
-  drawShape(gl, program, cameraMatrix, modelMatrix, n, 1, 3, 1);
-
-  // Hand (reuse the same matrix!)
-  modelMatrix = transform(modelMatrix, {ry: handAngle});  // rotate
-  modelMatrix = transform(modelMatrix, {y: -3});          // translate
-  drawShape(gl, program, cameraMatrix, modelMatrix, n, 2, .1, 2);
+    cuboids.forEach((cuboid) => {
+        var modelMatrix = identity();
+        cuboid.rx += cuboid.vrx;
+        cuboid.ry += cuboid.vry;
+        cuboid.rz += cuboid.vrz;
+        modelMatrix = transform(modelMatrix, cuboid);
+        drawShape(gl, program, cameraMatrix, modelMatrix, n);
+    });
 }
 
 // Update the angles and redraw the arm at each frame
 function onFrame(time) {
-    armAngle = (armAngle + ANGLE_STEP) % 360;
-    handAngle = (handAngle + ANGLE_STEP) % 360;
-    drawArm(gl, n, cameraMatrix);
+    cameraMatrix = transform(cameraMatrix, {rx: .00541, ry: .00181, rz: .00317});
+    drawCuboids(gl, n, cameraMatrix);
     requestAnimationFrame(onFrame);
 }
 onFrame();
