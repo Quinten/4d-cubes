@@ -1,2 +1,2 @@
-# cuboids
-Experiment with cubes
+# 4d cubes
+Cubes in the fourth dimension
