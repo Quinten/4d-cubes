@@ -80,7 +80,7 @@ gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 
 // Set cube color
 var color = gl.getAttribLocation(program, 'color');
-gl.vertexAttrib3f(color, .7, .8, .1);
+gl.vertexAttrib3f(color, 95/255, 159/255, 171/255);
 
 // Set the clear color and enable the depth test
 gl.clearColor(0, 0, 0, 1);
@@ -88,11 +88,11 @@ gl.enable(gl.DEPTH_TEST);
 
 // Set the camera
 var cameraMatrix = perspective({fov: deg2rad(30), aspect: canvas.width / canvas.height, near: 1, far: 100});
-//cameraMatrix = transform(cameraMatrix, {z: -15});
+cameraMatrix = transform(cameraMatrix, {z: -15});
 
 // Set the point light color and position
 var lightColor = gl.getUniformLocation(program, 'lightColor');
-gl.uniform3f(lightColor, 1, 1, 1);
+gl.uniform3f(lightColor, 232/255, 224/255, 135/255);
 
 var lightPosition = gl.getUniformLocation(program, 'lightPosition');
 gl.uniform3f(lightPosition, 2.5, 2.5, 2.5);
